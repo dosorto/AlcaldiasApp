@@ -101,6 +101,14 @@ class Login extends StatelessWidget {
                               backgroundColor: Colors.red,
                               colorText: Colors.white,
                             );
+                          } else {
+                            Get.snackbar(
+                              'Bienvenido',
+                              'Acceso concedido',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                            );
                           }
                         },
                         child: const Text('Ingresar'),

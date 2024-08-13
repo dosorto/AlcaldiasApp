@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:alcaldias/views/login.view.dart';
+import 'package:alcaldias/views/user.login.view.dart';
 //import 'package:alcaldias/views/profilescreen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp();
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
