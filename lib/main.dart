@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:alcaldias/views/login.dart';
+//import 'package:alcaldias/views/profilescreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -166,7 +167,7 @@ class HomeScreen extends StatelessWidget {
   void _onSelected(BuildContext context, int item) {
     switch (item) {
       case 0:
-        // agregr aqui que vaya a la pantalla de perfil
+        //Get.to(() => ProfileScreen(userData: userData));
         break;
       case 1:
         // cerrar sesion

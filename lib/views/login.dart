@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:alcaldias/controllers/loginController.dart';
 import 'package:alcaldias/views/forgotpassword.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:alcaldias/views/registrar.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -108,7 +109,7 @@ class Login extends StatelessWidget {
                     SizedBox(height: 20.h),
                     TextButton(
                       onPressed: () {
-                        // Acción para redirigir a la página de registro
+                        Get.to(() => const RegisterScreen());
                       },
                       child: const Text(
                         'Registrarte',
