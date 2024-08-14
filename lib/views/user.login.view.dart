@@ -1,3 +1,4 @@
+import 'package:alcaldias/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alcaldias/controllers/user.controller.dart';
@@ -6,8 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:alcaldias/views/user.register.dart';
 
 class Login extends StatelessWidget {
-  const Login();
-
   @override
   Widget build(BuildContext context) {
     final LoginController controller = Get.put(LoginController());
@@ -102,13 +101,10 @@ class Login extends StatelessWidget {
                               colorText: Colors.white,
                             );
                           } else {
-                            Get.snackbar(
-                              'Bienvenido',
-                              'Acceso concedido',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white,
-                            );
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreen()));
                           }
                         },
                         child: const Text('Ingresar'),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:alcaldias/services/user.service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _verifyIdentity() async {
     final String numeroidentidad = _idController.text;
+    await create_user_service("name", "email@fasdfa.com", "dasdasdasdas");
 
     if (numeroidentidad.isEmpty) {
       setState(() {
@@ -75,6 +77,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _registerUser() async {
     final String identityNumber = _idController.text;
     final String password = _passwordController.text;
+
+    await create_user_service("name", "email@fasdfa.com", "dasdasdasdas");
 
     if (password.isEmpty) {
       setState(() {
@@ -140,6 +144,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Número de Identidad',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+            ),
+            TextField(
+              controller: _idController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Nombre completo',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+            ),
+            TextField(
+              controller: _idController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'email',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+            ),
+            TextField(
+              controller: _idController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'password ',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),

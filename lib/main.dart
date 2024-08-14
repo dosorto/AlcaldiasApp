@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          home: const HomeScreen(),
+          home: Login(),
         );
       },
     );
@@ -169,7 +169,7 @@ class HomeScreen extends StatelessWidget {
         break;
       case 1:
         // cerrar sesion
-        Get.offAll(() => const Login());
+        Get.offAll(() => Login());
         break;
     }
   }
