@@ -104,7 +104,9 @@ class Propiedad extends StatelessWidget {
                         0: FlexColumnWidth(),
                         1: FlexColumnWidth(),
                         2: FlexColumnWidth(),
-                        3: FixedColumnWidth(100.0),
+                        3: FlexColumnWidth(),
+                        4: FixedColumnWidth(
+                            80.0), // Ajusta el ancho de la celda de opciones
                       },
                       children: [
                         TableRow(
@@ -114,8 +116,9 @@ class Propiedad extends StatelessWidget {
                           children: [
                             _buildTableCell('Clave Catastral'),
                             _buildTableCell('Tipo de Propiedad'),
-                            _buildTableCell('Ubicación'),
-                            _buildTableCell('Opciones'),
+                            _buildTableCell('Barrio'),
+                            _buildTableCell('Departamento'),
+                            _buildTableCell('Opciones')
                           ],
                         ),
                         TableRow(
@@ -123,26 +126,34 @@ class Propiedad extends StatelessWidget {
                             _buildTableCell(''),
                             _buildTableCell(''),
                             _buildTableCell(''),
+                            _buildTableCell(''),
                             TableCell(
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 4.0),
                                 child: Center(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // Acción para el botón
-                                      // OJO este botón tiene que llevar a ver el mapa
-                                    },
-                                    child: Icon(
-                                      Icons.location_on,
-                                      color: Colors.white,
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.orangeAccent.shade100,
-                                      minimumSize: Size(40, 40),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
+                                  child: Container(
+                                    width: 48, // Ajusta el ancho del contenedor
+                                    height:
+                                        48, // Ajusta la altura del contenedor
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Acción para el botón
+                                        // OJO este botón tiene que llevar a ver el mapa
+                                      },
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Colors.white,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Colors.orangeAccent.shade100,
+                                        padding: EdgeInsets
+                                            .zero, // Quita padding extra
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
                                       ),
                                     ),
                                   ),
