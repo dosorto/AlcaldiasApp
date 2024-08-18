@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alcaldias/controllers/loginController.dart';
+import 'package:alcaldias/controllers/user.controller.dart';
 
 class ForgotPassword extends StatelessWidget {
-  const ForgotPassword({super.key});
+  const ForgotPassword();
 
   @override
   Widget build(BuildContext context) {

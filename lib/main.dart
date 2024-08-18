@@ -1,16 +1,16 @@
+import 'package:alcaldias/views/pagos-pendientes.view.dart';
+import 'package:alcaldias/views/propiedades.vies.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:alcaldias/views/login.dart';
-//import 'package:alcaldias/views/profilescreen.dart';
+import 'package:alcaldias/views/pagos-realizados.view.dart';
+import 'package:alcaldias/views/user.login.view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          home: const HomeScreen(),
+          home: Login(),
         );
       },
     );
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8.0.h),
                   Text(
-                    "Usuario", //OJO -- AQUI DEBO PONER LA VARIABLE DE NOMBRE
+                    "Usuario", // Aquí puedes poner la variable de nombre
                     style: TextStyle(fontSize: 18.0.sp, color: Colors.black54),
                   ),
                 ],
@@ -98,7 +98,9 @@ class HomeScreen extends StatelessWidget {
               text: 'Pagos pendientes',
               color: Colors.blue.shade100,
               onTap: () {
-                // pantalla de Pagos pendientes
+                Get.to(() => PagosPendientes(
+                    nombreContribuyente:
+                        'Usuario')); //Traer el id del usuario para que salga el nombre.
               },
             ),
             SizedBox(height: 16.0.h),
@@ -107,7 +109,8 @@ class HomeScreen extends StatelessWidget {
               text: 'Pagos realizados',
               color: Colors.blue.shade100,
               onTap: () {
-                // pantalla de Pagos realizados
+                Get.to(() => PagosRealizados(
+                    nombreContribuyente: 'Usuario')); //Traer nombre del usuario
               },
             ),
             SizedBox(height: 16.0.h),
@@ -116,7 +119,8 @@ class HomeScreen extends StatelessWidget {
               text: 'Propiedades',
               color: Colors.blue.shade100,
               onTap: () {
-                // pantalla de Propiedades
+                Get.to(() => Propiedad(
+                    nombreContribuyente: 'Usuario')); //Traer nombre del usuario
               },
             ),
           ],
@@ -131,34 +135,37 @@ class HomeScreen extends StatelessWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(16.0.w),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12.0.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 24.0.w, color: Colors.black54),
-            SizedBox(width: 16.0.w),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 16.0.sp,
-                fontWeight: FontWeight.bold,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(16.0.w),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(12.0.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: Offset(0, 2),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 24.0.w, color: Colors.black54),
+              SizedBox(width: 16.0.w),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -170,8 +177,8 @@ class HomeScreen extends StatelessWidget {
         //Get.to(() => ProfileScreen(userData: userData));
         break;
       case 1:
-        // cerrar sesion
-        Get.offAll(() => const Login());
+        // cerrar sesión
+        Get.offAll(() => Login());
         break;
     }
   }
