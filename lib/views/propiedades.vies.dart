@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'map.dart';
+
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: Propiedad(
-        nombreContribuyente:
-            'Usuario'), // Reemplazar por el id del usuario para obtener el nombre
+    home: Propiedad(nombreContribuyente: 'Usuario'),
   ));
 }
 
@@ -129,8 +129,13 @@ class Propiedad extends StatelessWidget {
                                 child: Center(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      // Acción para el botón
-                                      // OJO este botón tiene que llevar a ver el mapa
+                                      // Navegar a MapaConPoligono
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MapaConPoligono(),
+                                        ),
+                                      );
                                     },
                                     child: Icon(
                                       Icons.location_on,
