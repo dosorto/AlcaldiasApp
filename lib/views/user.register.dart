@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'package:alcaldias/services/user.service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -11,118 +9,32 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _identityController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _secondNameController = TextEditingController();
+  final TextEditingController _firstSurnameController = TextEditingController();
+  final TextEditingController _secondSurnameController =
+      TextEditingController();
+  final TextEditingController _personalTaxController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _postalCodeController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  String? _selectedGender;
+  DateTime? _selectedDate;
   String _message = '';
   bool _isLoading = false;
-  bool _isIdentityVerified = false;
 
-  Future<void> _verifyIdentity() async {
-    final String numeroidentidad = _idController.text;
-    await create_user_service("name", "email@fasdfa.com", "dasdasdasdas");
-
-    if (numeroidentidad.isEmpty) {
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
       setState(() {
-        _message = 'Por favor ingrese su número de identidad';
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _message = '';
-    });
-
-    try {
-      final response = await http.get(
-        Uri.parse('https://api-verificar-identidad/$numeroidentidad'),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-
-        if (responseData['status'] == 'found_person') {
-          // Persona encontrada, permitir ingresar contraseña y registrar usuario
-          setState(() {
-            _isIdentityVerified = true;
-            _message = '';
-          });
-        } else if (responseData['status'] == 'found_user') {
-          // Usuario ya existe
-          setState(() {
-            _message = 'Usuario ya creado';
-          });
-        } else {
-          // No se encontró ni como persona ni como usuario
-          setState(() {
-            _message = 'Identidad no encontrada en el sistema';
-          });
-        }
-      } else {
-        setState(() {
-          _message = 'Error al conectar con el servidor';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _message = 'Error: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _registerUser() async {
-    final String identityNumber = _idController.text;
-    final String password = _passwordController.text;
-
-    await create_user_service("name", "email@fasdfa.com", "dasdasdasdas");
-
-    if (password.isEmpty) {
-      setState(() {
-        _message = 'Por favor ingrese una contraseña';
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _message = '';
-    });
-
-    try {
-      final response = await http.post(
-        Uri.parse('https://api-crear-usuario'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'identity_number': identityNumber,
-          'password': password, // La contraseña proporcionada por el usuario
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        setState(() {
-          _message = 'Usuario creado exitosamente';
-          _isIdentityVerified = false; // Restablecer el estado
-        });
-        _idController.clear();
-        _passwordController.clear();
-      } else {
-        setState(() {
-          _message = 'Error al crear el usuario';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _message = 'Error: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
+        _selectedDate = picked;
       });
     }
   }
@@ -130,105 +42,265 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 62, 132, 224),
       appBar: AppBar(
         title: const Text('Registro de Usuario'),
         backgroundColor: Colors.orange.shade100,
+        elevation: 4.0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Número de Identidad',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-            ),
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Nombre completo',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-            ),
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-            ),
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'password ',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            if (_isIdentityVerified) ...[
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               TextField(
-                controller: _passwordController,
-                obscureText: true,
+                controller: _identityController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Contraseña',
+                  labelText: 'Número de Identidad',
+                  prefixIcon: Icon(Icons.badge),
+                  filled: true,
+                  fillColor: Colors.white70,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
                 ),
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _registerUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade100,
-                  padding: const EdgeInsets.all(16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+              TextField(
+                controller: _firstNameController,
+                decoration: InputDecoration(
+                  labelText: 'Primer Nombre',
+                  prefixIcon: Icon(Icons.person),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _secondNameController,
+                decoration: InputDecoration(
+                  labelText: 'Segundo Nombre',
+                  prefixIcon: Icon(Icons.person),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _firstSurnameController,
+                decoration: InputDecoration(
+                  labelText: 'Primer Apellido',
+                  prefixIcon: Icon(Icons.person_outline),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _secondSurnameController,
+                decoration: InputDecoration(
+                  labelText: 'Segundo Apellido',
+                  prefixIcon: Icon(Icons.person_outline),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                value: _selectedGender,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedGender = value;
+                  });
+                },
+                items: [
+                  DropdownMenuItem(
+                    value: 'M',
+                    child: Text('Masculino'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'F',
+                    child: Text('Femenino'),
+                  ),
+                ],
+                decoration: InputDecoration(
+                  labelText: 'Sexo',
+                  prefixIcon: Icon(Icons.transgender),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _personalTaxController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Impuesto Personal',
+                  prefixIcon: Icon(Icons.attach_money),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _addressController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: 'Dirección',
+                  prefixIcon: Icon(Icons.location_on),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _postalCodeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Apartado Postal',
+                  prefixIcon: Icon(Icons.mail_outline),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      hint: Text('Código'),
+                      items: [
+                        DropdownMenuItem(
+                          value: '+1',
+                          child: Text('+1'),
+                        ),
+                        DropdownMenuItem(
+                          value: '+504',
+                          child: Text('+504'),
+                        ),
+                      ],
+                      onChanged: (value) {},
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.flag),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Flexible(
+                    flex: 3,
+                    child: TextField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: 'Teléfono',
+                        prefixIcon: Icon(Icons.phone),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+              InkWell(
+                onTap: () => _selectDate(context),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Fecha de Nacimiento',
+                    prefixIcon: Icon(Icons.calendar_today),
+                    filled: true,
+                    fillColor: Colors.white70,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
+                  child: Text(
+                    _selectedDate != null
+                        ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
+                        : 'Seleccione una fecha',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _isLoading ? null : () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange.shade300,
+                  padding: const EdgeInsets.symmetric(vertical: 18.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  elevation: 4.0,
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Registrar Usuario'),
               ),
-            ] else ...[
-              ElevatedButton(
-                onPressed: _isLoading ? null : _verifyIdentity,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade100,
-                  padding: const EdgeInsets.all(16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
+              const SizedBox(height: 16.0),
+              Text(
+                _message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: _message.contains('error') ? Colors.red : Colors.green,
                 ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Verificar Identidad'),
               ),
             ],
-            const SizedBox(height: 16.0),
-            Text(
-              _message,
-              style: TextStyle(
-                fontSize: 16.0,
-                color: _message.contains('error') ? Colors.red : Colors.green,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

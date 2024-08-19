@@ -104,7 +104,9 @@ class Propiedad extends StatelessWidget {
                         0: FlexColumnWidth(),
                         1: FlexColumnWidth(),
                         2: FlexColumnWidth(),
-                        3: FixedColumnWidth(100.0),
+                        3: FlexColumnWidth(),
+                        4: FixedColumnWidth(
+                            80.0), // Ajusta el ancho de la celda de opciones
                       },
                       children: [
                         TableRow(
@@ -114,8 +116,9 @@ class Propiedad extends StatelessWidget {
                           children: [
                             _buildTableCell('Clave Catastral'),
                             _buildTableCell('Tipo de Propiedad'),
-                            _buildTableCell('Ubicación'),
-                            _buildTableCell('Opciones'),
+                            _buildTableCell('Barrio'),
+                            _buildTableCell('Departamento'),
+                            _buildTableCell('Opciones')
                           ],
                         ),
                         TableRow(
@@ -123,9 +126,11 @@ class Propiedad extends StatelessWidget {
                             _buildTableCell(''),
                             _buildTableCell(''),
                             _buildTableCell(''),
+                            _buildTableCell(''),
                             TableCell(
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 4.0),
                                 child: Center(
                                   child: ElevatedButton(
                                     onPressed: () {
