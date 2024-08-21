@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:get/get.dart';
+import 'package:alcaldias/controllers/user.controller.dart'; // Asegúrate de que el controlador esté en la ruta correcta
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -10,33 +11,33 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _identityController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _secondNameController = TextEditingController();
-  final TextEditingController _firstSurnameController = TextEditingController();
-  final TextEditingController _secondSurnameController =
-      TextEditingController();
-  final TextEditingController _personalTaxController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String? _selectedGender;
-  DateTime? _selectedDate;
+  final TextEditingController _passwordController = TextEditingController();
+
+  final LoginController _loginController =
+      Get.put(LoginController()); // Instancia el controlador
+
   String _message = '';
   bool _isLoading = false;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+  Future<void> _registerUser() async {
+    setState(() {
+      _isLoading = true;
+      _message = '';
+    });
+
+    String responseMessage = await _loginController.registerUser(
+      _emailController.text,
+      _passwordController.text,
+      _identityController.text,
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
+
+    setState(() {
+      _isLoading = false;
+      _message = responseMessage.isEmpty
+          ? 'Usuario registrado exitosamente.'
+          : responseMessage;
+    });
   }
 
   @override
@@ -69,199 +70,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 16.0),
               TextField(
-                controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'Primer Nombre',
-                  prefixIcon: Icon(Icons.person),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _secondNameController,
-                decoration: InputDecoration(
-                  labelText: 'Segundo Nombre',
-                  prefixIcon: Icon(Icons.person),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _firstSurnameController,
-                decoration: InputDecoration(
-                  labelText: 'Primer Apellido',
-                  prefixIcon: Icon(Icons.person_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _secondSurnameController,
-                decoration: InputDecoration(
-                  labelText: 'Segundo Apellido',
-                  prefixIcon: Icon(Icons.person_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              DropdownButtonFormField<String>(
-                value: _selectedGender,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
-                items: [
-                  DropdownMenuItem(
-                    value: 'M',
-                    child: Text('Masculino'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'F',
-                    child: Text('Femenino'),
-                  ),
-                ],
-                decoration: InputDecoration(
-                  labelText: 'Sexo',
-                  prefixIcon: Icon(Icons.transgender),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _personalTaxController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Impuesto Personal',
-                  prefixIcon: Icon(Icons.attach_money),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _addressController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Dirección',
-                  prefixIcon: Icon(Icons.location_on),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _postalCodeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Apartado Postal',
-                  prefixIcon: Icon(Icons.mail_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: DropdownButtonFormField<String>(
-                      hint: Text('Código'),
-                      items: [
-                        DropdownMenuItem(
-                          value: '+1',
-                          child: Text('+1'),
-                        ),
-                        DropdownMenuItem(
-                          value: '+504',
-                          child: Text('+504'),
-                        ),
-                      ],
-                      onChanged: (value) {},
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.flag),
-                        filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Flexible(
-                    flex: 3,
-                    child: TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Teléfono',
-                        prefixIcon: Icon(Icons.phone),
-                        filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Fecha de Nacimiento',
-                    prefixIcon: Icon(Icons.calendar_today),
-                    filled: true,
-                    fillColor: Colors.white70,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                  ),
-                  child: Text(
-                    _selectedDate != null
-                        ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                        : 'Seleccione una fecha',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
@@ -274,9 +82,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                obscureText: true, // Campo de contraseña
+                decoration: InputDecoration(
+                  labelText: 'Contraseña',
+                  prefixIcon: Icon(Icons.lock),
+                  filled: true,
+                  fillColor: Colors.white70,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24.0),
               ElevatedButton(
-                onPressed: _isLoading ? null : () {},
+                onPressed: _isLoading ? null : _registerUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange.shade300,
                   padding: const EdgeInsets.symmetric(vertical: 18.0),
@@ -296,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
-                  color: _message.contains('error') ? Colors.red : Colors.green,
+                  color: _message.contains('Error') ? Colors.red : Colors.green,
                 ),
               ),
             ],

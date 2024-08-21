@@ -42,8 +42,9 @@ dependencies:
   get: ^4.6.6
   http: ^1.2.1
   percent_indicator: ^4.2.3
-  flutter_map: ^5.0.0
+  flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  shared_preferences: ^2.3.2
   
 
 dev_dependencies:

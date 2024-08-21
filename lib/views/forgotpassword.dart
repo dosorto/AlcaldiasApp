@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alcaldias/controllers/user.controller.dart';
+import 'package:alcaldias/controllers/password.controller.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword();
 
   @override
   Widget build(BuildContext context) {
-    LoginController controller = Get.put(LoginController());
+    final AuthController controller = Get.put(AuthController());
     return Scaffold(
       backgroundColor: Colors.blue[900],
       appBar: AppBar(
@@ -57,7 +57,7 @@ class ForgotPassword extends StatelessWidget {
                     InputBox(
                       isSecured: false,
                       hint: 'Email',
-                      txtController: controller.username,
+                      txtController: controller.emailController,
                       icon: Icons.email,
                     ),
                     const SizedBox(height: 20),
@@ -73,7 +73,7 @@ class ForgotPassword extends StatelessWidget {
                           ),
                         ),
                         onPressed: () async {
-                          // TODO: Implement forgot password functionality
+                          await controller.forgotPassword();
                         },
                         child: const Text('Enviar correo de confirmación'),
                       ),
