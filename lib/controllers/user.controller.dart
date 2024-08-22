@@ -68,7 +68,7 @@ class LoginController extends GetxController {
   }
 
   // Método para registrar usuario
-  Future<String> registerUser(
+  Future<String> registerUser1(
       String email, String password, String identidad) async {
     try {
       Data identityCheck = await checkIdentityService(identidad);
@@ -79,7 +79,6 @@ class LoginController extends GetxController {
           User2 user = User2.fromJson(registerResponse.data);
           print('Usuario registrado exitosamente: ${user.nombre}');
           String existingEmail = identityCheck.data['contribuyente']['email'];
-          print('Usuario ya registrado con correo: $existingEmail');
           return existingEmail; // Devuelve el correo existente
         } else if (registerResponse.code == 409) {
           // Manejar el caso donde el usuario ya está registrado
@@ -99,6 +98,52 @@ class LoginController extends GetxController {
       }
     } catch (e) {
       // Capturar y manejar cualquier excepción que ocurra durante la solicitud
+      print('Excepción durante el registro: $e');
+      return 'Error inesperado durante el registro. Por favor, inténtelo de nuevo.';
+    }
+  }
+
+  Future<Data> verifyIdentity(String identidad) async {
+    try {
+      Data identityCheck = await checkIdentityService(identidad);
+      if (identityCheck.code == 200) {
+        return identityCheck; // Devuelve el objeto Data con los datos de identidad
+      } else {
+        print(
+            'Error en la verificación de identidad: ${identityCheck.message}');
+        return Data(
+            code: identityCheck.code,
+            message: identityCheck.message,
+            data: {} // Devuelve un Data vacío en caso de error
+            );
+      }
+    } catch (e) {
+      print('Excepción durante la verificación de identidad: $e');
+      return Data(
+          code: 500,
+          message: 'Error inesperado durante la verificación de identidad.',
+          data: {});
+    }
+  }
+
+  Future<String> registerUser(
+      String email, String password, String identidad) async {
+    try {
+      Data registerResponse =
+          await createUserService(email, password, identidad);
+      if (registerResponse.code == 200) {
+        User2 user = User2.fromJson(registerResponse.data);
+        print('Usuario registrado exitosamente: ${user.nombre}');
+        return 'Usuario registrado exitosamente';
+      } else if (registerResponse.code == 409) {
+        String existingEmail = registerResponse.data['contribuyente']['email'];
+        print('Usuario ya registrado con correo: $existingEmail');
+        return existingEmail; // Devuelve el correo existente
+      } else {
+        print('Error al registrar: ${registerResponse.message}');
+        return registerResponse.message ?? 'Error al registrar usuario.';
+      }
+    } catch (e) {
       print('Excepción durante el registro: $e');
       return 'Error inesperado durante el registro. Por favor, inténtelo de nuevo.';
     }
