@@ -79,37 +79,45 @@ class Login extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    SizedBox(
-                      width: Get.width,
-                      height: 50.h,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.blue[900],
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                        ),
-                        onPressed: () async {
-                          bool success = await controller.submit();
-                          if (!success) {
-                            Get.snackbar(
-                              'Error',
-                              'Usuario o contraseña incorrectos',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
+                    // Obx para mostrar el indicador de carga o el botón de ingresar
+                    Obx(() {
+                      return controller.isLoading.value
+                          ? CircularProgressIndicator() // Indicador de carga mientras se procesa el inicio de sesión
+                          : SizedBox(
+                              width: Get.width,
+                              height: 50.h,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.blue[900],
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  bool success = await controller
+                                      .submit(); // Inicia el proceso de inicio de sesión
+                                  if (!success) {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Usuario o contraseña incorrectos',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text('Ingresar'),
+                              ),
                             );
-                          } else {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()));
-                          }
-                        },
-                        child: const Text('Ingresar'),
-                      ),
-                    ),
+                    }),
                     SizedBox(height: 20.h),
                     TextButton(
                       onPressed: () {
