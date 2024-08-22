@@ -13,6 +13,7 @@ class LoginController extends GetxController {
   late TextEditingController name;
   late TextEditingController password;
   var isPasswordHidden = true.obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
@@ -33,6 +34,7 @@ class LoginController extends GetxController {
   }
 
   Future<bool> submit() async {
+    isLoading.value = true; // Iniciar el indicador de carga
     Data data = (await login_service(username.text, password.text));
     switch (data.code) {
       case 200:
@@ -41,21 +43,25 @@ class LoginController extends GetxController {
           print(user.nombre);
           await _saveToken(user.token);
           await _saveNombre(user.nombre);
+          isLoading.value = false;
           return true;
         }
       case 403:
         {
           print(data.message);
+          isLoading.value = false;
           return false;
         }
       case 203:
         {
           print("sin Acceso: token sin acceso");
+          isLoading.value = false;
           return false;
         }
       default:
         {
           print("algo salio mal");
+          isLoading.value = false;
           return false;
         }
     }
@@ -72,9 +78,16 @@ class LoginController extends GetxController {
         if (registerResponse.code == 200) {
           User2 user = User2.fromJson(registerResponse.data);
           print('Usuario registrado exitosamente: ${user.nombre}');
-          return ''; // Éxito
+          String existingEmail = identityCheck.data['contribuyente']['email'];
+          print('Usuario ya registrado con correo: $existingEmail');
+          return existingEmail; // Devuelve el correo existente
+        } else if (registerResponse.code == 409) {
+          // Manejar el caso donde el usuario ya está registrado
+          String existingEmail = identityCheck.data['contribuyente']['email'];
+          print('Usuario ya registrado con correo: $existingEmail');
+          return existingEmail; // Devuelve el correo existente
         } else {
-          // Manejar errores en la respuesta de la API
+          // Manejar otros errores en la respuesta de la API
           print('Error al registrar: ${registerResponse.message}');
           return registerResponse.message ?? 'Error al registrar usuario.';
         }

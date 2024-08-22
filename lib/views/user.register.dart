@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alcaldias/controllers/user.controller.dart'; // Asegúrate de que el controlador esté en la ruta correcta
+import 'package:flutter/services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -13,6 +14,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _identityController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final LoginController _loginController =
       Get.put(LoginController()); // Instancia el controlador
@@ -20,11 +23,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _message = '';
   bool _isLoading = false;
 
+  // Controla la visibilidad de la contraseña
+  var _isPasswordHidden = true.obs;
+  var _isConfirmPasswordHidden = true.obs;
+
   Future<void> _registerUser() async {
     setState(() {
       _isLoading = true;
       _message = '';
     });
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _isLoading = false;
+        _message = 'Las contraseñas no coinciden.';
+      });
+      return;
+    }
 
     String responseMessage = await _loginController.registerUser(
       _emailController.text,
@@ -34,9 +49,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() {
       _isLoading = false;
-      _message = responseMessage.isEmpty
-          ? 'Usuario registrado exitosamente.'
-          : responseMessage;
+
+      // Verifica si la respuesta contiene un correo electrónico
+      if (responseMessage.contains('@')) {
+        _emailController.text = responseMessage;
+        _message = 'Usuario ya registrado con el correo: $responseMessage';
+      } else if (responseMessage.isEmpty) {
+        _message = 'Usuario registrado exitosamente.';
+      } else {
+        _message = responseMessage;
+      }
     });
   }
 
@@ -71,10 +93,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 16.0),
               TextField(
                 controller: _emailController,
+                readOnly: true, // Hace que el TextField sea de solo lectura
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.email),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.copy),
+                    onPressed: () {
+                      Clipboard.setData(
+                          ClipboardData(text: _emailController.text));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Correo copiado al portapapeles')));
+                    },
+                  ),
                   filled: true,
                   fillColor: Colors.white70,
                   border: OutlineInputBorder(
@@ -83,19 +115,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: _passwordController,
-                obscureText: true, // Campo de contraseña
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  prefixIcon: Icon(Icons.lock),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
+              Obx(() => TextField(
+                    controller: _passwordController,
+                    obscureText: _isPasswordHidden.value,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      prefixIcon: Icon(Icons.lock),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(_isPasswordHidden.value
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          _isPasswordHidden.value = !_isPasswordHidden.value;
+                        },
+                      ),
+                    ),
+                  )),
+              const SizedBox(height: 16.0),
+              Obx(() => TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: _isConfirmPasswordHidden.value,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Contraseña',
+                      prefixIcon: Icon(Icons.lock),
+                      filled: true,
+                      fillColor: Colors.white70,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(_isConfirmPasswordHidden.value
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          _isConfirmPasswordHidden.value =
+                              !_isConfirmPasswordHidden.value;
+                        },
+                      ),
+                    ),
+                  )),
               const SizedBox(height: 24.0),
               ElevatedButton(
                 onPressed: _isLoading ? null : _registerUser,
