@@ -119,7 +119,7 @@ class PropiedadMostrar extends StatelessWidget {
                               1: FlexColumnWidth(),
                               2: FlexColumnWidth(),
                               3: FlexColumnWidth(),
-                              4: FlexColumnWidth(),
+                              //  4: FlexColumnWidth(),
                             },
                             children: [
                               TableRow(
@@ -129,7 +129,7 @@ class PropiedadMostrar extends StatelessWidget {
                                 children: [
                                   _buildTableCell('Clave Catastral'),
                                   _buildTableCell('Tipo de propiedad'),
-                                  _buildTableCell('Barrio'),
+                                  //  _buildTableCell('Barrio'),
                                   _buildTableCell('Departamento'),
                                   _buildTableCell('Opciones'),
                                 ],
@@ -139,7 +139,7 @@ class PropiedadMostrar extends StatelessWidget {
                                       _buildTableCell(
                                           propiedad.claveCatastral.toString()),
                                       _buildTableCell(propiedad.tipoPropiedad),
-                                      _buildTableCell(propiedad.barrio),
+                                      //   _buildTableCell(propiedad.barrio),
                                       _buildTableCell(propiedad.departamento),
                                       TableCell(
                                         child: Padding(
