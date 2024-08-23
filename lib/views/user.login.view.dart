@@ -2,7 +2,7 @@ import 'package:alcaldias/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alcaldias/controllers/user.controller.dart';
-import 'package:alcaldias/views/forgotpassword.dart';
+//import 'package:alcaldias/views/forgotpassword.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:alcaldias/views/user.register.dart';
 
@@ -35,10 +35,18 @@ class Login extends StatelessWidget {
                     ),
                     SizedBox(height: 10.h),
                     Text(
-                      'GLP', // Texto cambiado
+                      'GSP',
                       style: TextStyle(
                         fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
+                        color: Colors.blue[900],
+                      ),
+                    ),
+                    Text(
+                      'Gestor de Servicios y Propiedades',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.normal,
                         color: Colors.blue[900],
                       ),
                     ),
@@ -66,7 +74,7 @@ class Login extends StatelessWidget {
                           isPasswordField: true,
                           isPasswordHidden: controller.isPasswordHidden.value,
                         )),
-                    Align(
+                    /* Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
@@ -77,7 +85,7 @@ class Login extends StatelessWidget {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    ),
+                    ),*/
                     SizedBox(height: 20.h),
                     // Obx para mostrar el indicador de carga o el botón de ingresar
                     Obx(() {

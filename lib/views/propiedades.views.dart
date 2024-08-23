@@ -205,6 +205,7 @@ class PropiedadMostrar extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black,
+              fontSize: 10,
             ),
             textAlign: TextAlign.center,
           ),
