@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
       minTextAdapt: false,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'Alcaldías',
+          title: 'GSP',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
             scaffoldBackgroundColor: Color(0xFFFDF5E6),
           ),
-          home: const HomeScreen(),
+          home: Login(),
         );
       },
     );
