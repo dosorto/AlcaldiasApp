@@ -2,7 +2,7 @@ import 'package:alcaldias/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alcaldias/controllers/user.controller.dart';
-import 'package:alcaldias/views/forgotpassword.dart';
+//import 'package:alcaldias/views/forgotpassword.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:alcaldias/views/user.register.dart';
 
@@ -35,10 +35,18 @@ class Login extends StatelessWidget {
                     ),
                     SizedBox(height: 10.h),
                     Text(
-                      'GLP', // Texto cambiado
+                      'GSP',
                       style: TextStyle(
                         fontSize: 30.sp,
                         fontWeight: FontWeight.bold,
+                        color: Colors.blue[900],
+                      ),
+                    ),
+                    Text(
+                      'Gestor de Servicios y Propiedades',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.normal,
                         color: Colors.blue[900],
                       ),
                     ),
@@ -66,7 +74,7 @@ class Login extends StatelessWidget {
                           isPasswordField: true,
                           isPasswordHidden: controller.isPasswordHidden.value,
                         )),
-                    Align(
+                    /* Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
@@ -77,39 +85,47 @@ class Login extends StatelessWidget {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    ),
+                    ),*/
                     SizedBox(height: 20.h),
-                    SizedBox(
-                      width: Get.width,
-                      height: 50.h,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.blue[900],
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                        ),
-                        onPressed: () async {
-                          bool success = await controller.submit();
-                          if (!success) {
-                            Get.snackbar(
-                              'Error',
-                              'Usuario o contraseña incorrectos',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
+                    // Obx para mostrar el indicador de carga o el botón de ingresar
+                    Obx(() {
+                      return controller.isLoading.value
+                          ? CircularProgressIndicator() // Indicador de carga mientras se procesa el inicio de sesión
+                          : SizedBox(
+                              width: Get.width,
+                              height: 50.h,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.blue[900],
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  bool success = await controller
+                                      .submit(); // Inicia el proceso de inicio de sesión
+                                  if (!success) {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Usuario o contraseña incorrectos',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text('Ingresar'),
+                              ),
                             );
-                          } else {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()));
-                          }
-                        },
-                        child: const Text('Ingresar'),
-                      ),
-                    ),
+                    }),
                     SizedBox(height: 20.h),
                     TextButton(
                       onPressed: () {

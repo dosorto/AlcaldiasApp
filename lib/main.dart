@@ -7,6 +7,7 @@ import 'package:alcaldias/views/pagos-realizados.view.dart';
 import 'package:alcaldias/views/propiedades.views.dart';
 import 'package:alcaldias/views/user.login.view.dart';
 import 'package:alcaldias/views/user.profile.view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,21 +21,54 @@ class MyApp extends StatelessWidget {
       minTextAdapt: false,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'Alcaldías',
+          title: 'GSP',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
             scaffoldBackgroundColor: Color(0xFFFDF5E6),
           ),
-          home: const HomeScreen(),
+          home: Login(),
         );
       },
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen();
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String? token; // Variable para almacenar el token
+  String? nombre_usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken(); // Llama a la función para cargar el token cuando se inicializa la pantalla
+    _loadNombre();
+  }
+
+  Future<void> _loadToken() async {
+    final prefs = await SharedPreferences
+        .getInstance(); // Obtén la instancia de SharedPreferences
+    setState(() {
+      token = prefs.getString(
+          'auth_token'); // Guarda el token en la variable sin validación
+    });
+  }
+
+  Future<void> _loadNombre() async {
+    final prefs = await SharedPreferences
+        .getInstance(); // Obtén la instancia de SharedPreferences
+    setState(() {
+      nombre_usuario = prefs.getString(
+          'nombre_usuario'); // Guarda el token en la variable sin validación
+    });
+  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -84,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Usuario',
+                  nombre_usuario ?? "Usuario",
                   style: TextStyle(
                     fontSize: 18.sp,
                     color: Colors.black54,
@@ -113,7 +147,9 @@ class HomeScreen extends StatelessWidget {
                           color: Color.fromARGB(255, 208, 225, 238),
                           onTap: () {
                             Get.to(() => PagosPendientes(
-                                nombreContribuyente: 'Usuario'));
+                                nombreContribuyente:
+                                    nombre_usuario ?? "Usuario",
+                                token: token ?? ""));
                           },
                         ),
                       ),
@@ -127,7 +163,9 @@ class HomeScreen extends StatelessWidget {
                           color: Color.fromARGB(255, 208, 225, 238),
                           onTap: () {
                             Get.to(() => PagosRealizados(
-                                nombreContribuyente: 'Usuario'));
+                                nombreContribuyente:
+                                    nombre_usuario ?? "Usuario",
+                                token: token ?? ""));
                           },
                         ),
                       ),
@@ -142,7 +180,9 @@ class HomeScreen extends StatelessWidget {
                     text: 'Mis\npropiedades',
                     color: Color.fromARGB(255, 208, 225, 238),
                     onTap: () {
-                      Get.to(() => Propiedad(nombreContribuyente: 'Usuario'));
+                      Get.to(() => PropiedadMostrar(
+                          nombreContribuyente: nombre_usuario ?? "Usuario",
+                          token: token ?? ""));
                     },
                   ),
                 ),
@@ -173,7 +213,9 @@ class HomeScreen extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.person, color: Colors.black87),
                     onPressed: () {
-                      Get.to(() => UserProfileView());
+                      Get.to(() => UserProfileView(
+                            token: token ?? "",
+                          ));
                     },
                     splashColor: Colors.grey.shade200,
                     highlightColor: Colors.grey.shade400,

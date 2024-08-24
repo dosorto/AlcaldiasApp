@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:get/get.dart';
+import 'package:alcaldias/controllers/user.controller.dart'; // Asegúrate de que el controlador esté en la ruta correcta
+import 'package:flutter/services.dart';
+import 'package:alcaldias/models/data.model.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -10,33 +13,80 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _identityController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _secondNameController = TextEditingController();
-  final TextEditingController _firstSurnameController = TextEditingController();
-  final TextEditingController _secondSurnameController =
-      TextEditingController();
-  final TextEditingController _personalTaxController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String? _selectedGender;
-  DateTime? _selectedDate;
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final LoginController _loginController =
+      Get.put(LoginController()); // Instancia el controlador
+
   String _message = '';
   bool _isLoading = false;
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
+  // Controla la visibilidad de la contraseña
+  var _isPasswordHidden = true.obs;
+  var _isConfirmPasswordHidden = true.obs;
+  bool _isIdentityVerified = false;
+  bool _isVerifyButtonDisabled = false;
+
+  Future<void> _registerUser() async {
+    setState(() {
+      _isLoading = true;
+      _message = '';
+    });
+
+    if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _selectedDate = picked;
+        _isLoading = false;
+        _message = 'Las contraseñas no coinciden.';
       });
+      return;
     }
+
+    String responseMessage = await _loginController.registerUser1(
+      _emailController.text,
+      _passwordController.text,
+      _identityController.text,
+    );
+
+    setState(() {
+      _isLoading = false;
+
+      // Verifica si la respuesta contiene un correo electrónico
+      if (responseMessage.contains('@')) {
+        _emailController.text = responseMessage;
+        _message = 'Usuario registrado con el correo: $responseMessage';
+      } else if (responseMessage.isEmpty) {
+        _message = 'Usuario registrado exitosamente.';
+      } else {
+        _message = responseMessage;
+      }
+    });
+  }
+
+  Future<void> _verifyIdentity() async {
+    setState(() {
+      _isLoading = true;
+      _message = '';
+    });
+
+    Data identityCheck =
+        await _loginController.verifyIdentity(_identityController.text);
+
+    setState(() {
+      _isLoading = false;
+      if (identityCheck.code == 200) {
+        _isIdentityVerified = true;
+        _emailController.text = identityCheck.data['contribuyente']['email'];
+        _message = '';
+        _isVerifyButtonDisabled = true; // Deshabilitar el botón
+      } else {
+        _isIdentityVerified = false;
+        _message = 'Identidad no registrada. Comuníquese con el administrador.';
+        _isVerifyButtonDisabled = false; // Mantener el botón habilitado
+      }
+    });
   }
 
   @override
@@ -68,215 +118,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'Primer Nombre',
-                  prefixIcon: Icon(Icons.person),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _secondNameController,
-                decoration: InputDecoration(
-                  labelText: 'Segundo Nombre',
-                  prefixIcon: Icon(Icons.person),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _firstSurnameController,
-                decoration: InputDecoration(
-                  labelText: 'Primer Apellido',
-                  prefixIcon: Icon(Icons.person_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _secondSurnameController,
-                decoration: InputDecoration(
-                  labelText: 'Segundo Apellido',
-                  prefixIcon: Icon(Icons.person_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              DropdownButtonFormField<String>(
-                value: _selectedGender,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
-                items: [
-                  DropdownMenuItem(
-                    value: 'M',
-                    child: Text('Masculino'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'F',
-                    child: Text('Femenino'),
-                  ),
-                ],
-                decoration: InputDecoration(
-                  labelText: 'Sexo',
-                  prefixIcon: Icon(Icons.transgender),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _personalTaxController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Impuesto Personal',
-                  prefixIcon: Icon(Icons.attach_money),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _addressController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Dirección',
-                  prefixIcon: Icon(Icons.location_on),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _postalCodeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Apartado Postal',
-                  prefixIcon: Icon(Icons.mail_outline),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: DropdownButtonFormField<String>(
-                      hint: Text('Código'),
-                      items: [
-                        DropdownMenuItem(
-                          value: '+1',
-                          child: Text('+1'),
-                        ),
-                        DropdownMenuItem(
-                          value: '+504',
-                          child: Text('+504'),
-                        ),
-                      ],
-                      onChanged: (value) {},
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.flag),
-                        filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Flexible(
-                    flex: 3,
-                    child: TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Teléfono',
-                        prefixIcon: Icon(Icons.phone),
-                        filled: true,
-                        fillColor: Colors.white70,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              InkWell(
-                onTap: () => _selectDate(context),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Fecha de Nacimiento',
-                    prefixIcon: Icon(Icons.calendar_today),
-                    filled: true,
-                    fillColor: Colors.white70,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                  ),
-                  child: Text(
-                    _selectedDate != null
-                        ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                        : 'Seleccione una fecha',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  filled: true,
-                  fillColor: Colors.white70,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24.0),
               ElevatedButton(
-                onPressed: _isLoading ? null : () {},
+                onPressed: _isLoading || _isVerifyButtonDisabled
+                    ? null
+                    : _verifyIdentity,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange.shade300,
                   padding: const EdgeInsets.symmetric(vertical: 18.0),
@@ -287,8 +132,94 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Registrar Usuario'),
+                    : const Text('Verificar Identidad'),
               ),
+              const SizedBox(height: 16.0),
+              if (_isIdentityVerified) ...[
+                TextField(
+                  controller: _emailController,
+                  readOnly: true, // Hace que el TextField sea de solo lectura
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () {
+                        Clipboard.setData(
+                            ClipboardData(text: _emailController.text));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Correo copiado al portapapeles')));
+                      },
+                    ),
+                    filled: true,
+                    fillColor: Colors.white70,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Obx(() => TextField(
+                      controller: _passwordController,
+                      obscureText: _isPasswordHidden.value,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        prefixIcon: Icon(Icons.lock),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(_isPasswordHidden.value
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            _isPasswordHidden.value = !_isPasswordHidden.value;
+                          },
+                        ),
+                      ),
+                    )),
+                const SizedBox(height: 16.0),
+                Obx(() => TextField(
+                      controller: _confirmPasswordController,
+                      obscureText: _isConfirmPasswordHidden.value,
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar Contraseña',
+                        prefixIcon: Icon(Icons.lock),
+                        filled: true,
+                        fillColor: Colors.white70,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(_isConfirmPasswordHidden.value
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            _isConfirmPasswordHidden.value =
+                                !_isConfirmPasswordHidden.value;
+                          },
+                        ),
+                      ),
+                    )),
+                const SizedBox(height: 24.0),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _registerUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange.shade300,
+                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    elevation: 4.0,
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Registrar Usuario'),
+                ),
+              ],
               const SizedBox(height: 16.0),
               Text(
                 _message,
@@ -296,7 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.bold,
-                  color: _message.contains('error') ? Colors.red : Colors.green,
+                  color: _message.contains('Error') ? Colors.red : Colors.green,
                 ),
               ),
             ],
