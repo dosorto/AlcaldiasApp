@@ -5,8 +5,8 @@ import 'package:alcaldias/models/pago.model.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: PagosPendientes(
-        nombreContribuyente: 'Katia Aguilar', token: 'tu_token_aqui'),
+    home:
+        PagosPendientes(nombreContribuyente: 'Dayana', token: 'tu_token_aqui'),
   ));
 }
 

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
             scaffoldBackgroundColor: Color(0xFFFDF5E6),
           ),
-          home: Login(),
+          home: const HomeScreen(),
         );
       },
     );

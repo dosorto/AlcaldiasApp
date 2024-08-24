@@ -100,7 +100,7 @@ class PropiedadMostrar extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Pagos Realizados',
+                            'Propiedades',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
